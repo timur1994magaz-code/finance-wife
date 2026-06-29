@@ -929,8 +929,228 @@ let accounts = safeGet('ftw_accounts', '{"bank":[],"broker":[],"cash":[]}');
 let debts = safeGet('ftw_debts', '[]');
 let debtPaid = safeGet('ftw_debtPaid', '{}');
 
+// ════════════════════════════
+// ONE-TIME SEED: историческая выгрузка доходов (окт 2022 — июнь 2026)
+// Короткие числа были записаны в тысячах → ×1000; полные суммы — как есть в рублях.
+// ════════════════════════════
+if (!localStorage.getItem('ftw_income_seed_v1')) {
+  const seedIncome = [
+    // 2022
+    { ym:'2022-10', name:'Оля ???', amount:125000 },
+    { ym:'2022-10', name:'Шпуров', amount:130000 },
+    { ym:'2022-10', name:'Шпуров', amount:95000 },
+    { ym:'2022-11', name:'Калушкин', amount:100000 },
+    { ym:'2022-12', name:'Калушкин', amount:130000 },
+    // 2023
+    { ym:'2023-01', name:'Калушкин', amount:125000 },
+    { ym:'2023-01', name:'Шпуров', amount:250000 },
+    { ym:'2023-01', name:'Шпуров', amount:100000 },
+    { ym:'2023-02', name:'Калушкин', amount:125000 },
+    { ym:'2023-03', name:'Подкаминская (Грэндма)', amount:723000 },
+    { ym:'2023-03', name:'Игорь Шпур', amount:95000 },
+    { ym:'2023-03', name:'Калушкин', amount:120000 },
+    { ym:'2023-04', name:'Калушкин', amount:200000 },
+    { ym:'2023-05', name:'Калушкин', amount:200000 },
+    { ym:'2023-05', name:'Оля', amount:80000 },
+    { ym:'2023-05', name:'Оля', amount:800000 },
+    { ym:'2023-06', name:'Оля', amount:200000 },
+    { ym:'2023-07', name:'Оля (права)', amount:80000 },
+    { ym:'2023-07', name:'Проект Совком', amount:400000 },
+    { ym:'2023-08', name:'Калушкин', amount:100000 },
+    { ym:'2023-08', name:'Юра', amount:200000 },
+    { ym:'2023-08', name:'Продажа телефона', amount:45000 },
+    { ym:'2023-09', name:'Калушкин', amount:100000 },
+    { ym:'2023-09', name:'С проекта взяла posie в долг', amount:200000 },
+    { ym:'2023-10', name:'Взяла у Оли', amount:150000 },
+    { ym:'2023-11', name:'Права', amount:9500 },
+    { ym:'2023-11', name:'Права', amount:14500 },
+    { ym:'2023-11', name:'Права', amount:32000 },
+    { ym:'2023-11', name:'Права', amount:80000 },
+    { ym:'2023-11', name:'Безруков', amount:892000 },
+    { ym:'2023-12', name:'Доп за права', amount:10500 },
+    { ym:'2023-12', name:'Права', amount:35000 },
+    { ym:'2023-12', name:'Права', amount:14000 },
+    { ym:'2023-12', name:'Права', amount:12000 },
+    { ym:'2023-12', name:'Права', amount:13500 },
+    { ym:'2023-12', name:'Подкаминская', amount:1117000 },
+    // 2024
+    { ym:'2024-01', name:'Права', amount:16800 },
+    { ym:'2024-01', name:'Права', amount:10900 },
+    { ym:'2024-01', name:'Алроса (совокупное)', amount:500000 },
+    { ym:'2024-02', name:'Права', amount:54400 },
+    { ym:'2024-02', name:'Права', amount:17000 },
+    { ym:'2024-02', name:'Права', amount:19000 },
+    { ym:'2024-02', name:'Права', amount:7000 },
+    { ym:'2024-02', name:'Алроса (совокупное)', amount:500000 },
+    { ym:'2024-03', name:'Права', amount:24000 },
+    { ym:'2024-03', name:'Права', amount:54000 },
+    { ym:'2024-03', name:'Алроса (совокупное)', amount:500000 },
+    { ym:'2024-04', name:'Алроса', amount:4163000 },
+    { ym:'2024-05', name:'Алроса (продление)', amount:90000 },
+    { ym:'2024-05', name:'Капитализация по вкладу Сбер', amount:17000 },
+    { ym:'2024-06', name:'Аванс Хит Совком', amount:150000 },
+    { ym:'2024-06', name:'Продления', amount:13000 },
+    { ym:'2024-06', name:'Продления', amount:8000 },
+    { ym:'2024-06', name:'Совком (доплата)', amount:1766000 },
+    { ym:'2024-07', name:'Калушкин (отметить в таблице)', amount:200000 },
+    { ym:'2024-07', name:'Процент по вкладу?', amount:58000 },
+    { ym:'2024-07', name:'Продление', amount:12000 },
+    { ym:'2024-07', name:'Процент по вкладу', amount:14000 },
+    { ym:'2024-08', name:'Калушкин (отметить)', amount:300000 },
+    { ym:'2024-08', name:'Права', amount:57000 },
+    { ym:'2024-08', name:'Квартира', amount:7298000 },
+    { ym:'2024-08', name:'Проценты по вкладу', amount:56000 },
+    { ym:'2024-09', name:'Права', amount:22000 },
+    { ym:'2024-09', name:'Права', amount:30000 },
+    { ym:'2024-09', name:'Права', amount:48000 },
+    { ym:'2024-09', name:'Процент по вкладу', amount:36000 },
+    { ym:'2024-10', name:'Права', amount:28000 },
+    { ym:'2024-10', name:'Права', amount:32500 },
+    { ym:'2024-10', name:'Права', amount:31300 },
+    { ym:'2024-10', name:'Права', amount:190000 },
+    { ym:'2024-10', name:'Процент по вкладу??? — общий за 2 месяца', amount:220000 },
+    { ym:'2024-10', name:'Процент по вкладу', amount:17000 },
+    { ym:'2024-10', name:'Права', amount:10000 },
+    { ym:'2024-10', name:'Права', amount:26000 },
+    { ym:'2024-10', name:'Права', amount:72000 },
+    { ym:'2024-11', name:'Права', amount:28000 },
+    { ym:'2024-11', name:'Права', amount:7000 },
+    { ym:'2024-11', name:'Калушкин', amount:150000 },
+    { ym:'2024-11', name:'Права', amount:120000 },
+    { ym:'2024-11', name:'Процент по вкладам', amount:20000 },
+    { ym:'2024-11', name:'Процент по займу Сергей', amount:145800 },
+    { ym:'2024-12', name:'Права', amount:30500 },
+    { ym:'2024-12', name:'Муж дал', amount:20000 },
+    { ym:'2024-12', name:'Калушкин (отметить)!', amount:100000 },
+    { ym:'2024-12', name:'Займ', amount:145000 },
+    // 2025
+    { ym:'2025-01', name:'Права', amount:7900 },
+    { ym:'2025-01', name:'Права', amount:27660 },
+    { ym:'2025-01', name:'Проценты ?', amount:30000 },
+    { ym:'2025-01', name:'Муж дал', amount:30000 },
+    { ym:'2025-01', name:'Займ', amount:145000 },
+    { ym:'2025-02', name:'Калушкин', amount:100000 },
+    { ym:'2025-02', name:'За продление posie', amount:123000 },
+    { ym:'2025-02', name:'Муж дал', amount:50000 },
+    { ym:'2025-02', name:'Займ', amount:57000 },
+    { ym:'2025-02', name:'Инвестиции', amount:30000 },
+    { ym:'2025-02', name:'Займ', amount:145000 },
+    { ym:'2025-03', name:'Займ', amount:57000 },
+    { ym:'2025-03', name:'Займ', amount:145000 },
+    { ym:'2025-03', name:'Процент', amount:16000 },
+    { ym:'2025-03', name:'Аванс за проект Безруков', amount:370000 },
+    { ym:'2025-04', name:'Калушкин', amount:100000 },
+    { ym:'2025-04', name:'Процент по вкладу от прадакшн', amount:20000 },
+    { ym:'2025-04', name:'Проценты за продление', amount:47000 },
+    { ym:'2025-04', name:'Процент по вкладу', amount:16000 },
+    { ym:'2025-04', name:'Процент инвестиции Костя', amount:57000 },
+    { ym:'2025-04', name:'Займ', amount:145000 },
+    { ym:'2025-04', name:'Права', amount:40000 },
+    { ym:'2025-05', name:'Калушкин', amount:150000 },
+    { ym:'2025-05', name:'Процент со счёта проекта', amount:50000 },
+    { ym:'2025-05', name:'Проценты Костя', amount:131000 },
+    { ym:'2025-05', name:'Проект Безрук', amount:2430000 },
+    { ym:'2025-05', name:'Проект Лагашкин', amount:1415000 },
+    { ym:'2025-05', name:'Займ', amount:145000 },
+    { ym:'2025-06', name:'Процент по вкладу на Альфу', amount:45500 },
+    { ym:'2025-06', name:'Калушкин', amount:100000 },
+    { ym:'2025-06', name:'Проценты Костя', amount:131000 },
+    { ym:'2025-06', name:'Права', amount:7000 },
+    { ym:'2025-06', name:'Права', amount:47000 },
+    { ym:'2025-06', name:'Займ', amount:145000 },
+    { ym:'2025-07', name:'Процент по депозиту Альфа', amount:29000 },
+    { ym:'2025-07', name:'Займ Костя', amount:131000 },
+    { ym:'2025-07', name:'Калушкин', amount:150000 },
+    { ym:'2025-07', name:'Займ', amount:145000 },
+    { ym:'2025-08', name:'Калушкин', amount:150000 },
+    { ym:'2025-08', name:'Займ Костя', amount:131000 },
+    { ym:'2025-08', name:'Займ Сережа', amount:145000 },
+    { ym:'2025-09', name:'Калушкин', amount:150000 },
+    { ym:'2025-09', name:'Права', amount:120000 },
+    { ym:'2025-09', name:'Сережа', amount:145000 },
+    { ym:'2025-10', name:'Права', amount:31000 },
+    { ym:'2025-10', name:'Костя', amount:131000 },
+    { ym:'2025-10', name:'Сережа займ', amount:145000 },
+    { ym:'2025-11', name:'Сережа займ', amount:250000 },
+    { ym:'2025-11', name:'Костя', amount:291000 },
+    { ym:'2025-11', name:'Сергей', amount:91500 },
+    { ym:'2025-12', name:'Калушкин', amount:100000 },
+    { ym:'2025-12', name:'Костя', amount:124000 },
+    { ym:'2025-12', name:'Сергей', amount:250000 },
+    { ym:'2025-12', name:'Калушкин', amount:100000 },
+    // 2026
+    { ym:'2026-01', name:'Сергей', amount:250000 },
+    { ym:'2026-01', name:'Права', amount:46000 },
+    { ym:'2026-01', name:'Костя', amount:124000 },
+    { ym:'2026-01', name:'Права', amount:21930 },
+    { ym:'2026-01', name:'Сергей', amount:141500 },
+    { ym:'2026-02', name:'Калушкин', amount:100000 },
+    { ym:'2026-02', name:'Сергей', amount:250000 },
+    { ym:'2026-02', name:'Права', amount:155000 },
+    { ym:'2026-02', name:'От Кости проценты возврат', amount:714000 },
+    { ym:'2026-02', name:'Калушкин', amount:100000 },
+    { ym:'2026-02', name:'Сергей', amount:195500 },
+    { ym:'2026-03', name:'Сергей', amount:250000 },
+    { ym:'2026-03', name:'Сергей', amount:35000 },
+    { ym:'2026-03', name:'Сергей', amount:55000 },
+    { ym:'2026-03', name:'Сергей', amount:141000 },
+    { ym:'2026-03', name:'Калушкин', amount:100000 },
+    { ym:'2026-04', name:'Сергей', amount:250000 },
+    { ym:'2026-04', name:'Сергей', amount:35000 },
+    { ym:'2026-04', name:'Права', amount:27000 },
+    { ym:'2026-04', name:'Права', amount:90000 },
+    { ym:'2026-04', name:'Права', amount:18000 },
+    { ym:'2026-04', name:'Сергей', amount:141000 },
+    { ym:'2026-04', name:'Сергей', amount:55000 },
+    { ym:'2026-04', name:'Взяла у Оли аванс за Совком', amount:200000 },
+    { ym:'2026-05', name:'Сергей', amount:250000 },
+    { ym:'2026-05', name:'Калушкин', amount:100000 },
+    { ym:'2026-05', name:'Сергей', amount:35000 },
+    { ym:'2026-05', name:'Права', amount:65000 },
+    { ym:'2026-05', name:'Сергей', amount:195000 },
+    { ym:'2026-06', name:'Сергей', amount:250000 },
+    { ym:'2026-06', name:'Проект Совком', amount:476000 },
+    { ym:'2026-06', name:'Сергей', amount:90000 }
+  ];
+  let _seedId = 722000000000;
+  seedIncome.forEach(s => {
+    incomes.push({ id: _seedId++, name: s.name, date: s.ym + '-01', amount: s.amount });
+  });
+  try { localStorage.setItem('ftw_income_seed_v1', '1'); } catch(e) {}
+  save();
+}
+
+// Доп. займы (добавлены позже)
+if (!localStorage.getItem('ftw_income_seed_v2')) {
+  const seedIncome2 = [
+    { date:'2025-06-01', name:'Заняла у Оли', amount:500000 },
+    { date:'2025-09-25', name:'Заняла у Оли', amount:500000 },
+    { date:'2025-12-30', name:'Заняла у Оли', amount:300000 }
+  ];
+  let _seedId2 = 722000000500;
+  seedIncome2.forEach(s => {
+    incomes.push({ id: _seedId2++, name: s.name, date: s.date, amount: s.amount });
+  });
+  try { localStorage.setItem('ftw_income_seed_v2', '1'); } catch(e) {}
+  save();
+}
+
+// Исправление: «Заняла у Оли» должно стоять ТОЛЬКО на трёх займах (июнь/сент/дек 2025),
+// все остальные записи возвращаем в «Займ».
+if (!localStorage.getItem('ftw_income_fix_olya_v3')) {
+  const olyaKeys = new Set(['2025-06-01|500000', '2025-09-25|500000', '2025-12-30|300000']);
+  let _fixed = false;
+  incomes.forEach(i => {
+    const sig = i.date + '|' + i.amount;
+    if (i.name === 'Заняла у Оли' && !olyaKeys.has(sig)) { i.name = 'Займ'; _fixed = true; }
+  });
+  try { localStorage.setItem('ftw_income_fix_olya_v3', '1'); } catch(e) {}
+  if (_fixed) save();
+}
+
 const START_YEAR = 2026;
 const START_MONTH = 5; // May
+const PERIOD_START_YEAR = 2022; // earliest year shown in period selectors (historical data)
 const MONTHS_RU = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_RU_GEN = ['','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
@@ -990,7 +1210,7 @@ function buildPeriodSelectors() {
   [ms, rf, rt].forEach(el => el.innerHTML = '');
   ys.innerHTML = '';
 
-  for (let y = START_YEAR; y <= 2030; y++) {
+  for (let y = PERIOD_START_YEAR; y <= 2030; y++) {
     const opt = document.createElement('option');
     opt.value = y; opt.textContent = y;
     ys.appendChild(opt);
@@ -1321,11 +1541,17 @@ function renderHistoryBreakdown(type) {
     const yearTotal = Object.values(byYear[y]).flat().reduce((s,i)=>s+i.amount,0);
     const months = Object.keys(byYear[y]).sort((a,b) => +a - +b);
 
+    const avgPerMonth = months.length ? yearTotal / months.length : 0;
+
     html += `
     <div style="margin-bottom:24px">
       <div style="display:flex;justify-content:space-between;align-items:center;background:#f0ede8;padding:10px 16px;border-left:3px solid ${isIncome ? 'var(--green)' : 'var(--red)'};margin-bottom:2px">
         <span style="font-family:'SF Mono',Menlo,Monaco,Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:1px">${y}</span>
         <span style="font-family:'SF Mono',Menlo,Monaco,Consolas,monospace;font-weight:600;font-size:14px;color:${isIncome ? 'var(--green)' : 'var(--red)'}">Итого: ${fmt(yearTotal)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#faf9f6;padding:7px 16px;border-left:3px solid ${isIncome ? 'var(--green)' : 'var(--red)'};margin-bottom:2px">
+        <span style="font-family:'SF Mono',Menlo,Monaco,Consolas,monospace;font-size:12px;font-style:italic;color:var(--muted)">Средн${isIncome ? 'ий доход' : 'ие расходы'} в месяц по году (${months.length} мес.)</span>
+        <span style="font-family:'SF Mono',Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;color:${isIncome ? 'var(--green)' : 'var(--red)'}">${fmt(avgPerMonth)}</span>
       </div>`;
 
     months.forEach(m => {
